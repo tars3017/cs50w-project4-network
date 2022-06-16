@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Post
+from .models import User, Post, Profile
 
 
 def index(request):
@@ -53,7 +53,11 @@ def register(request):
         try:
             user = User.objects.create_user(username, email, password)
             user.save()
+
+            profile = Profile(owner=user)
+            profile.save()
         except IntegrityError:
+            print(username, email, password, IntegrityError)
             return render(request, "network/register.html", {
                 "message": "Username already taken."
             })
@@ -62,10 +66,22 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
-def all_post_view(request):
+def index(request):
     if request.method == "POST":
         TODO
     posts = Post.objects.order_by("post_time").all()
     return render(request, 'network/all_post.html', {
         "posts": posts
     })
+
+def show_profile(request, name):
+    current_user = User.objects.get(username=name)
+    print("!!!!", Profile.objects.get(owner=current_user))
+    return render(request, 'network/profile.html', {
+        "user_info": Profile.objects.get(owner=current_user),  
+        "my_posts": Post.objects.filter(poster=current_user).all()
+    })
+
+def show_following(request):
+    current_user = User.objects.get(username=request.name)
+    # following_post = Post.objects.

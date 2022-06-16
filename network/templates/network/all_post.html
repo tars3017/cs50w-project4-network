@@ -4,6 +4,7 @@
     <div>
         <p>New Post</p>
         <form action="{% url 'register' %}" method="post">
+            <!-- javscript to do to submit the form -->
             {% csrf_token %}
             <input type="text" name="content">
             <button type="submit">Post</button>
@@ -12,10 +13,10 @@
     <div> 
         {% for post in posts %} 
             <div>
-                <h6>post.poster</h6>
+                <h6>{{ post.poster }}</h6>
                 <p>edit not develop yet</p>
-                <p>post.content</p>
-                <p>post.post_time</p>
+                <p>{{ post.content }}</p>
+                <p>{{ post.post_time }}</p>
                 {% if post.like_num %} 
                     <p>{{ post.like_num}}&#10084;</p>
                 {% else %} 
