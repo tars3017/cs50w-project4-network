@@ -1,0 +1,27 @@
+.bottom {
+    position: relative;
+    /* bottom: 10px; */
+    border-radius: 5px;
+    border: 5px;
+}
+.left-button {
+    left: 50px;
+}
+.right-button {
+    right: 50px;
+}
+.round {
+    border-radius: 12px;
+}
+.center {
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+    margin-top: 10px;
+}
+.post {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    padding-bottom: 1px;
+}

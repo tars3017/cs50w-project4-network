@@ -13,10 +13,10 @@
             <p>edit not develop yet</p>
             <p>{{ my_post.content }}</p>
             <p>{{ my_post.post_time }}</p>
-            {% if post.like_num %} 
-                <p>{{ my_post.like_num}}&#10084;</p>
-            {% else %} 
+            {% if my_post.like_num == 0 %} 
                 <p>{{ my_post.like_num}}&#9825;</p>
+            {% else %} 
+                <p>{{ my_post.like_num}}&#10084;</p>
             {% endif %}
         </div>
         {% endfor %}
