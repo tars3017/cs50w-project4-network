@@ -10,7 +10,7 @@
             <button type="submit" class=" round text-light bg-dark border-primary">Post</button>
         </form>
     </div>
-    <div> 
+    <div id="post-area"> 
         {% for post in posts %} 
             <div class="post round text-light bg-dark border-primary">
                 <h6>{{ post.poster }}</h6>
@@ -23,11 +23,11 @@
                 <p>{{ post.like_num}}&#9825;</p>
                 {% endif %}
             </div>
-        {% endfor %}
-            <div class="bottom">
-                <button class="right-button round text-light bg-dark border-primary">Previous Page</button>
-                <button class="left-button round text-light bg-dark border-primary">Next Page</button>  
-            </div>
+        {% endfor %}   
+    </div>
+    <div class="bottom">
+        <button class="right-button round text-light bg-dark border-primary" id="prev">Previous Page</button>
+        <button class="left-button round text-light bg-dark border-primary" id="next">Next Page</button>  
     </div>
     
 {% endblock %}

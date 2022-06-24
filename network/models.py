@@ -31,7 +31,7 @@ class Post(models.Model):
     def __str__(self):
         return f"{self.id}: {self.poster} {self.post_time}"
 
-    def serialize(slef):
+    def serialize(self):
         return {
             "poster": self.poster.username,
             "content": self.content,
