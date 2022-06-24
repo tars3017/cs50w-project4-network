@@ -1,11 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
-    
+    checkHasNextPrev();
     document.querySelector('#next').addEventListener('click', () => load_another_page('next'));
     document.querySelector('#prev').addEventListener('click', () => load_another_page('prev'));
 
 });
 
 function load_another_page(opt) {
+    console.log('click detect');
     // checkHasNextPrev();
     let post_area = document.querySelector('#post-area');
     var first = post_area.firstElementChild;
@@ -59,7 +60,7 @@ function load_another_page(opt) {
         });
     });
 
-    // checkHasNextPrev();
+    checkHasNextPrev();
 }
 
 function checkHasNextPrev() {
@@ -69,7 +70,8 @@ function checkHasNextPrev() {
     .then(response => response.json())
     .then(data => {
         console.log(data);
-        if (data["has_next"]) {
+        if (!data["has_next"]) {
+            console.log("has next");
             console.log("disabled next");
             document.querySelector('#next').setAttribute('disabled', '');
             document.querySelector('#next').classList.remove("bg-dark");
@@ -85,12 +87,13 @@ function checkHasNextPrev() {
             document.querySelector('#next').classList.add("bg-dark");
             
         }
-        if (data["has_prev"]) {
+        if (!data["has_prev"]) {
+            console.log("has prev");
             console.log("disabled prev");
             document.querySelector('#prev').setAttribute('disabled', '');
             document.querySelector('#prev').classList.remove("bg-dark");
             document.querySelector('#prev').classList.remove("text-light");
-            document.querySelector('#prev').classList.remove("text-dark");
+            document.querySelector('#prev').classList.add("text-dark");
             document.querySelector('#prev').classList.add("bg-secondary");
         }
         else {

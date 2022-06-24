@@ -120,8 +120,10 @@ def show_following(request):
 def turn_next(request):
     print(post_paginator)
     global page_now
+    print("page_now", page_now)
     if page_now+1 <= post_paginator.num_pages:
         page_now = page_now + 1
+        print("plus ", page_now)
         next_page = post_paginator.page(page_now)
         print("okay", JsonResponse([post.serialize() for post in next_page], safe=False))
         return JsonResponse([post.serialize() for post in next_page], safe=False)
@@ -130,8 +132,10 @@ def turn_next(request):
 
 def turn_prev(request):
     global page_now
+    print("page_now", page_now)
     if page_now-1 >= 1:
         page_now = page_now - 1
+        print("minus ", page_now)
         prev_page = post_paginator.page(page_now)
         print("okay", JsonResponse([post.serialize() for post in prev_page], safe=False))
         return JsonResponse([post.serialize() for post in prev_page], safe=False)
@@ -141,12 +145,12 @@ def turn_prev(request):
 def check_has_another(request):
     has_next = True
     has_prev = True
-    print(page_now, post_paginator.num_pages)
+    print("page_now vs num_pages", page_now, post_paginator.num_pages)
     if page_now == post_paginator.num_pages:
         has_next = False
     if page_now == 1:
         has_prev = False
-    print(has_prev, has_next)
+    # print(has_prev, has_next)
     page_info = {
         "has_next": has_next,
         "has_prev": has_prev
