@@ -1,11 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('#next').addEventListener('click', load_next_page);
-    // document.querySelector('#index').addEventListener('click', () => load_post('index'));
-    // document.querySelector('#personal').addEventListener('click', () => load_post('personal'));
-    // document.querySelector('#following').addEventListener('click', () => load_post('following'));
+    
+    document.querySelector('#next').addEventListener('click', () => load_another_page('next'));
+    document.querySelector('#prev').addEventListener('click', () => load_another_page('prev'));
+
 });
 
-function load_next_page() {
+function load_another_page(opt) {
+    // checkHasNextPrev();
     let post_area = document.querySelector('#post-area');
     var first = post_area.firstElementChild;
     while (first) {
@@ -13,7 +14,7 @@ function load_next_page() {
         first = post_area.firstElementChild;
     }
     console.log('here');
-    fetch('/next', {
+    fetch(`/${opt}`, {
         method: 'GET'
     })
     .then(response => response.json())
@@ -57,6 +58,50 @@ function load_next_page() {
             post_area.appendChild(this_post);
         });
     });
+
+    // checkHasNextPrev();
+}
+
+function checkHasNextPrev() {
+    fetch('has_another', {
+        method: 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        if (data["has_next"]) {
+            console.log("disabled next");
+            document.querySelector('#next').setAttribute('disabled', '');
+            document.querySelector('#next').classList.remove("bg-dark");
+            document.querySelector('#next').classList.remove("text-light");
+            document.querySelector('#next').classList.add("bg-secondary");
+            document.querySelector('#next').classList.add("text-dark");
+        }
+        else {
+            document.querySelector('#next').removeAttribute('disabled', '');
+            document.querySelector('#next').classList.remove("bg-secondary");
+            document.querySelector('#next').classList.remove("text-dark");
+            document.querySelector('#next').classList.add("text-light");
+            document.querySelector('#next').classList.add("bg-dark");
+            
+        }
+        if (data["has_prev"]) {
+            console.log("disabled prev");
+            document.querySelector('#prev').setAttribute('disabled', '');
+            document.querySelector('#prev').classList.remove("bg-dark");
+            document.querySelector('#prev').classList.remove("text-light");
+            document.querySelector('#prev').classList.remove("text-dark");
+            document.querySelector('#prev').classList.add("bg-secondary");
+        }
+        else {
+            document.querySelector('#prev').removeAttribute('disabled', '');
+            document.querySelector('#prev').classList.remove("bg-secondary");
+            document.querySelector('#prev').classList.remove("text-dark");
+            document.querySelector('#prev').classList.add("text-light");
+            document.querySelector('#prev').classList.add("bg-dark");
+            
+        }
+    })
 }
 // function load_post(load_target) {
 //     if (load_target === 'index') {

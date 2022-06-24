@@ -12,5 +12,7 @@ urlpatterns = [
     path("profile/<str:name>", views.show_profile, name="profile"),
     path("following", views.show_following, name="following"),
     path("next", views.turn_next, name="next"),
+    path("prev", views.turn_prev, name="prev"),
+    path("has_another", views.check_has_another, name="has_another")
     # path("prev", views.turn_prev, name="prev"),
 ]

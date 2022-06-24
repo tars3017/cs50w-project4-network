@@ -127,49 +127,31 @@ def turn_next(request):
         return JsonResponse([post.serialize() for post in next_page], safe=False)
     else:
         return JsonResponse({"error": "Page out of range."}, status=400)
-# def get_posts(request, target, page_idx):
-#     if target == 'index':
-#         if page_idx == 1:
-#             posts = Post.objects.order_by("-post_time").all()
-#             post_paginator = Paginator(posts, post_per_page)
-#             return JsonResponse([post.serialize() for post in post_paginator.page(1)], safe=False)
-#         elif page_idx <= post_paginator.num_pages:
-#             return JsonResponse([post.serialize() for post in post_paginator.page(page_idx)], safe=False)
-#             # [email.serialize() for email in emails], safe=False
-#         else:
-#             return JsonResponse({"error": "Page out of range."}, status=400)
 
-#     elif target == 'following':
-#         if page_idx == 1:
-#             current_user = User.objects.get(username=request.user)
-#             follow_to_list = Profile.objects.get(owner=current_user).follow_to.all()
-#             post_lists = []
-#             for follow_to in follow_to_list:
-#                 tmp_set = Post.objects.filter(poster=follow_to)
-#                 for tmp in tmp_set:
-#                     post_lists.append(tmp)
-#             ordered = sorted(post_lists, key=operator.attrgetter('post_time'), reverse=True)
-#             post_paginator = Paginator(ordered, post_per_page)
-#             return JsonResponse([post.serialize() for post in post_paginator.page(1)], safe=False)
-        
-#         elif page_idx <= post_paginator.num_pages:
-#             return JsonResponse([post.serialize() for post in post_paginator.page(page_idx)], safe=False)
-        
-#         else:
-#             return JsonResponse({"error": "Page out of range."}, status=400)
-    
-#     else: # personal post
-#         if page_idx == 1:
-#             current_user = User.objects.get(username=name)
-#             post_paginator = Paginator(Post.objects.filter(poster=current_user).order_by("-post_time").all(), post_per_page)
-#             return JsonResponse([post.serialize() for post in post_paginator.page(1)], safe=False)
-        
-#         elif page_idx <= post_paginator.num_pages:
-#             return JsonResponse([post.serialize() for post in post_paginator.page(page_idx)], safe=False)
-    
-#         else:
-#             return JsonResponse({"error": "Page out of range."}, status=400)
-    
+def turn_prev(request):
+    global page_now
+    if page_now-1 >= 1:
+        page_now = page_now - 1
+        prev_page = post_paginator.page(page_now)
+        print("okay", JsonResponse([post.serialize() for post in prev_page], safe=False))
+        return JsonResponse([post.serialize() for post in prev_page], safe=False)
+    else:
+        return JsonResponse({"error": "Page out of range."}, status=400)
+
+def check_has_another(request):
+    has_next = True
+    has_prev = True
+    print(page_now, post_paginator.num_pages)
+    if page_now == post_paginator.num_pages:
+        has_next = False
+    if page_now == 1:
+        has_prev = False
+    print(has_prev, has_next)
+    page_info = {
+        "has_next": has_next,
+        "has_prev": has_prev
+    }
+    return JsonResponse(page_info)
 
 # def show_personal_info(request):
 #     current_user = User.objects.get(username=request.username)
