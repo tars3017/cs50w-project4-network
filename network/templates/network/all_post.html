@@ -10,6 +10,17 @@
             <button type="submit" class=" round text-light bg-dark border-primary">Post</button>
         </form>
     </div>
+    {% if user_info %}
+        <div>
+            <div>{{ user_info.owner.username }}</div>
+            <div>Followers &#128101; {{ user_info.followers }}</div>
+            <div>Following &#128225; {{ user_info.follow_to.count }}</div>
+        </div>
+    {% endif %}
+
+    {% if message %} 
+        <h3>{{ message }}</h3>
+    {% endif %}
     <div id="post-area"> 
         {% for post in posts %} 
             <div class="post round text-light bg-dark border-primary">

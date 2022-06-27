@@ -1,15 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
-    checkHasNextPrev();
+    // checkHasNextPrev();
     document.querySelector('#next').addEventListener('click', () => load_another_page('next'));
     document.querySelector('#prev').addEventListener('click', () => load_another_page('prev'));
-
+    window.onload = checkHasNextPrev;
 });
 
+// window.addEventListener('haschange', function () {
+//     console.log('location changed!');
+// });
 function load_another_page(opt) {
-    console.log('click detect');
-    // checkHasNextPrev();
+    console.log('click detect', opt);
+    checkHasNextPrev();
     let post_area = document.querySelector('#post-area');
-    var first = post_area.firstElementChild;
+    let first = post_area.firstElementChild;
     while (first) {
         first.remove();
         first = post_area.firstElementChild;
@@ -57,17 +60,21 @@ function load_another_page(opt) {
             this_post.appendChild(element);
 
             post_area.appendChild(this_post);
-        });
-    });
 
-    checkHasNextPrev();
+            checkHasNextPrev();
+        });
+    })
+
+    
 }
 
 function checkHasNextPrev() {
-    fetch('has_another', {
+    console.log("run checkHasNextPrev");
+    fetch('/has_another', {
         method: 'GET'
     })
     .then(response => response.json())
+    // .then(tmp => console.log(tmp.json()));
     .then(data => {
         console.log(data);
         if (!data["has_next"]) {
@@ -88,7 +95,6 @@ function checkHasNextPrev() {
             
         }
         if (!data["has_prev"]) {
-            console.log("has prev");
             console.log("disabled prev");
             document.querySelector('#prev').setAttribute('disabled', '');
             document.querySelector('#prev').classList.remove("bg-dark");
@@ -104,53 +110,5 @@ function checkHasNextPrev() {
             document.querySelector('#prev').classList.add("bg-dark");
             
         }
-    })
+    });
 }
-// function load_post(load_target) {
-//     if (load_target === 'index') {
-//         fetch('/index/0', {
-//             method: 'GET'
-//         })
-//         .then(response => response.json())
-//         .then(data => {
-//             console.log(data);
-            // data.forEach(post => {
-            //     const poster = post.poster;
-            //     const content = post.content;
-            //     const like_num = post.like_num;
-            //     const timestamp = post.post_time;
-
-            //     const post_area = document.querySelector('#post-area');
-            //     let element = document.createElement('h6');
-                
-            //     element.innerHTML = poster;
-            //     post_area.appendChild(element);
-
-            //     element = document.createElement('p');
-            //     element.innerHTML = 'edit not develp ye';
-            //     post_area.appendChild(element);
-
-            //     element.innerHTML = content;
-            //     post_area.appendChild(element);
-                
-            //     element = innerHTML = timestamp;
-            //     post_area.appendChild(element);
-
-            //     if (like_num !== 0) {
-            //         element.innerHTML = `${like_num}&#10084;`;
-            //     }
-            //     else {
-            //         element.innerHTML = '0&#9825';
-            //     }
-            //     post_area.appendChild(element);
-            // })
-//         });
-        
-//     }
-//     else if (load_target === 'following') {
-//         TODO
-//     }
-//     else {
-//         TODO
-//     }
-// }

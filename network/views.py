@@ -87,20 +87,31 @@ def index(request):
     })
 
 def show_profile(request, name):
-    current_user = User.objects.get(username=name)
+    print("show_profile", name)
+    current_user = User.objects.get(username=request.user)
     global post_paginator
     global page_now
     post_paginator = Paginator(Post.objects.filter(poster=current_user).order_by("-post_time").all(), post_per_page)
     page_now = 1
+    print("cnt", post_paginator)
     # print("!!!!", Profile.objects.get(owner=current_user))
-    return render(request, 'network/profile.html', {
+    return render(request, 'network/all_post.html', {
         "user_info": Profile.objects.get(owner=current_user),  
-        "my_posts": post_paginator.page(1)
+        "posts": post_paginator.page(1)
     })
 
 def show_following(request):
     current_user = User.objects.get(username=request.user)
     follow_to_list = Profile.objects.get(owner=current_user).follow_to.all()
+    global post_paginator
+    global page_now
+    # print(not follow_to_list)
+    if not follow_to_list:
+        post_paginator = Paginator([], post_per_page)
+        page_now = 1
+        return render(request, 'network/all_post.html', {
+            "message": "You are not following someone."
+        })
     post_lists = []
     for follow_to in follow_to_list:
         tmp_set = Post.objects.filter(poster=follow_to)
@@ -109,8 +120,7 @@ def show_following(request):
     print(post_lists)
     ordered = sorted(post_lists, key=operator.attrgetter('post_time'), reverse=True)
     print(post_lists)
-    global post_paginator
-    global page_now
+    
     post_paginator = Paginator(ordered, post_per_page)
     page_now = 1
     return render(request, 'network/all_post.html', {
@@ -118,7 +128,7 @@ def show_following(request):
     })
 
 def turn_next(request):
-    print(post_paginator)
+    print("turn next")
     global page_now
     print("page_now", page_now)
     if page_now+1 <= post_paginator.num_pages:
@@ -128,9 +138,10 @@ def turn_next(request):
         print("okay", JsonResponse([post.serialize() for post in next_page], safe=False))
         return JsonResponse([post.serialize() for post in next_page], safe=False)
     else:
-        return JsonResponse({"error": "Page out of range."}, status=400)
+        return JsonResponse({"error": "Page out of range.",}, status=400)
 
 def turn_prev(request):
+    print("turn prev")
     global page_now
     print("page_now", page_now)
     if page_now-1 >= 1:
@@ -140,12 +151,14 @@ def turn_prev(request):
         print("okay", JsonResponse([post.serialize() for post in prev_page], safe=False))
         return JsonResponse([post.serialize() for post in prev_page], safe=False)
     else:
-        return JsonResponse({"error": "Page out of range."}, status=400)
+        return JsonResponse({"error": "Page out of range.",}, status=400)
 
 def check_has_another(request):
+    # print("check has another")
+    # print("count", post_paginator.count)
     has_next = True
     has_prev = True
-    print("page_now vs num_pages", page_now, post_paginator.num_pages)
+    # print("page_now vs num_pages", page_now, post_paginator.num_pages)
     if page_now == post_paginator.num_pages:
         has_next = False
     if page_now == 1:
@@ -153,9 +166,11 @@ def check_has_another(request):
     # print(has_prev, has_next)
     page_info = {
         "has_next": has_next,
-        "has_prev": has_prev
+        "has_prev": has_prev,
     }
-    return JsonResponse(page_info)
+    print("page_info", page_info)
+    print("check here")
+    return JsonResponse(page_info, status=200)
 
 # def show_personal_info(request):
 #     current_user = User.objects.get(username=request.username)
