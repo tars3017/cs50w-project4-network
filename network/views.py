@@ -213,3 +213,7 @@ def store_post(request):
         # return JsonResponse({
         #     "msg": "ok"
         # }, status=200)
+
+
+def like_motion(request, post_num):
+    TODO

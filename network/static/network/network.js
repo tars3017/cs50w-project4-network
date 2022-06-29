@@ -1,16 +1,37 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // checkHasNextPrev();
+    checkHasNextPrev();
     document.querySelector('#next').addEventListener('click', () => load_another_page('next'));
     document.querySelector('#prev').addEventListener('click', () => load_another_page('prev'));
-    window.onload = checkHasNextPrev;
-    document.querySelector('.heart').forEach(heart => {
-
-    });
+    window.onload = updateCheck();
+    
 });
 
 // window.addEventListener('haschange', function () {
 //     console.log('location changed!');
+//     updateCheck();
 // });
+function updateCheck() {
+    console.log('post change!');
+    checkHasNextPrev();
+    update_heart();
+}
+function update_heart() {
+    // console.log('run update_heart');
+    document.querySelectorAll('.heart').forEach(heart => {
+        heart.onclick = () =>{
+            console.log(heart.parentElement.dataset.id);
+            chang_like_status(heart.parentElement.dataset.id);
+            console.log(heart.innerHTML);
+            if (heart.innerHTML.includes('❤')) {
+                heart.innerHTML = heart.innerHTML.replace('❤', '♡');
+            }
+            else {
+                console.log(heart.innerHTML.replace('♡', '❤'));
+                heart.innerHTML = heart.innerHTML.replace('♡', '❤');
+            }
+        }
+    });
+}
 function load_another_page(opt) {
     console.log('click detect', opt);
     checkHasNextPrev();
@@ -37,7 +58,7 @@ function load_another_page(opt) {
             
             let this_post = document.createElement('div');
             this_post.className = "post round text-light bg-dark border-primary";
-            this_post.id = id;
+            this_post.setAttribute("data-id", id);
             let element = document.createElement('h6');
             
             element.innerHTML = poster;
@@ -61,17 +82,19 @@ function load_another_page(opt) {
             this_post.appendChild(element);
 
             element = document.createElement('p');
+            element.className = 'heart';
             if (like_or_not) {
                 element.innerHTML = `${like_num}&#10084;`;
             }
             else {
-                element.innerHTML = '0&#9825';
+                element.innerHTML = `${like_num}&#9825`;
             }
             this_post.appendChild(element);
 
             post_area.appendChild(this_post);
 
             checkHasNextPrev();
+            update_heart();
         });
     })
 
@@ -79,7 +102,7 @@ function load_another_page(opt) {
 }
 
 function checkHasNextPrev() {
-    console.log("run checkHasNextPrev");
+    // console.log("run checkHasNextPrev");
     fetch('/has_another', {
         method: 'GET'
     })
@@ -88,8 +111,8 @@ function checkHasNextPrev() {
     .then(data => {
         console.log(data);
         if (!data["has_next"]) {
-            console.log("has next");
-            console.log("disabled next");
+            // console.log("has next");
+            // console.log("disabled next");
             document.querySelector('#next').setAttribute('disabled', '');
             document.querySelector('#next').classList.remove("bg-dark");
             document.querySelector('#next').classList.remove("text-light");
@@ -105,7 +128,7 @@ function checkHasNextPrev() {
             
         }
         if (!data["has_prev"]) {
-            console.log("disabled prev");
+            // console.log("disabled prev");
             document.querySelector('#prev').setAttribute('disabled', '');
             document.querySelector('#prev').classList.remove("bg-dark");
             document.querySelector('#prev').classList.remove("text-light");
@@ -121,4 +144,8 @@ function checkHasNextPrev() {
             
         }
     });
+}
+
+function chang_like_status(id) {
+    console.log("click hear no", id);
 }

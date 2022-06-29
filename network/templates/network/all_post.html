@@ -25,7 +25,7 @@
     {% else %}
         <div id="post-area"> 
             {% for post in posts %} 
-                <div class="post round text-light bg-dark border-primary" id={{post.id}}>
+                <div class="post round text-light bg-dark border-primary" data-id={{post.id}}>
                     <h6>{{ post.poster }}</h6>
                     {% if post.poster == name %}
                         <button class="edit-place round text-light bg-secondary border-primary">Edit</button>
