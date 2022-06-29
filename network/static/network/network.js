@@ -3,6 +3,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#next').addEventListener('click', () => load_another_page('next'));
     document.querySelector('#prev').addEventListener('click', () => load_another_page('prev'));
     window.onload = checkHasNextPrev;
+    document.querySelector('.heart').forEach(heart => {
+
+    });
 });
 
 // window.addEventListener('haschange', function () {
@@ -25,22 +28,29 @@ function load_another_page(opt) {
     .then(data => {
         console.log(data);
         data.forEach(post => {
+            const id = post.id;
             const poster = post.poster;
             const content = post.content;
             const like_num = post.like_num;
             const timestamp = post.post_time;
-
+            const like_or_not = post.is_like;
             
             let this_post = document.createElement('div');
             this_post.className = "post round text-light bg-dark border-primary";
+            this_post.id = id;
             let element = document.createElement('h6');
             
             element.innerHTML = poster;
             this_post.appendChild(element);
 
-            element = document.createElement('p');
-            element.innerHTML = 'edit not develp ye';
-            this_post.appendChild(element);
+            // console.log(poster, document.querySelector('#personal'))
+            if (document.querySelector('#personal') !== null && `<strong>${poster}</strong>` == document.querySelector('#personal').innerHTML) {
+                element = document.createElement('button');
+                element.className = "edit-place round text-light bg-secondary border-primary"
+                // element.value = id;
+                element.innerHTML = 'Edit';
+                this_post.appendChild(element);
+            }  
 
             element = document.createElement('p');
             element.innerHTML = content;
@@ -51,7 +61,7 @@ function load_another_page(opt) {
             this_post.appendChild(element);
 
             element = document.createElement('p');
-            if (like_num !== 0) {
+            if (like_or_not) {
                 element.innerHTML = `${like_num}&#10084;`;
             }
             else {

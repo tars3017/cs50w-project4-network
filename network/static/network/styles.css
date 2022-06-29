@@ -25,3 +25,7 @@
     padding: 10px;
     padding-bottom: 1px;
 }
+.edit-place {
+    position: absolute;
+    right: 50px;
+}

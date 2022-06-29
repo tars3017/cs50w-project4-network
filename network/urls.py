@@ -13,6 +13,7 @@ urlpatterns = [
     path("following", views.show_following, name="following"),
     path("next", views.turn_next, name="next"),
     path("prev", views.turn_prev, name="prev"),
-    path("has_another", views.check_has_another, name="another")
+    path("has_another", views.check_has_another, name="another"),
+    path("send_post", views.store_post, name="send")
     # path("prev", views.turn_prev, name="prev"),
 ]

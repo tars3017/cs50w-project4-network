@@ -8,11 +8,16 @@ from .models import User, Post, Profile
 import operator
 from django.core.paginator import Paginator
 from django.http import JsonResponse
+from django import forms
 
 
 post_paginator = None 
 post_per_page = 2
 page_now = 1
+
+class NewPostForm(forms.Form):
+    words = forms.CharField(label='', widget=forms.TextInput(attrs={'class': 'round text-light bg-dark border-primary'}))
+
 
 def index(request):
     return render(request, "network/index.html")
@@ -74,30 +79,45 @@ def register(request):
         return render(request, "network/register.html")
 
 def index(request):
-    if request.method == "POST":
-        TODO
     posts = Post.objects.order_by("-post_time").all()
     global post_paginator
     global page_now
     post_paginator = Paginator(posts, post_per_page)
     page_now = 1
-    # print(post_paginator)
-    return render(request, 'network/all_post.html', {
-        "posts": post_paginator.page(1)
-    })
+    if request.user.is_authenticated:
+        current_user = User.objects.get(username=request.user)
+        return render(request, 'network/all_post.html', {
+            "user_info": Profile.objects.get(owner=current_user),
+            "posts": post_paginator.page(1),
+            "new_post_form": NewPostForm(),
+            "name": request.user,
+            "index": True,
+        })
+    else:
+        return render(request, 'network/all_post.html', {
+            "posts": post_paginator.page(1),
+            "index": True,
+        })
 
 def show_profile(request, name):
     print("show_profile", name)
-    current_user = User.objects.get(username=request.user)
+    # haven't fix the problem that others can peak your profile
+    current_user = User.objects.get(username=name)
     global post_paginator
     global page_now
     post_paginator = Paginator(Post.objects.filter(poster=current_user).order_by("-post_time").all(), post_per_page)
     page_now = 1
-    print("cnt", post_paginator)
+    for post in post_paginator.page(1):
+        print(type(post))
+    for tmp in Profile.objects.get(owner=current_user).like_post.all():
+        print(tmp)
     # print("!!!!", Profile.objects.get(owner=current_user))
     return render(request, 'network/all_post.html', {
         "user_info": Profile.objects.get(owner=current_user),  
-        "posts": post_paginator.page(1)
+        "posts": post_paginator.page(1),
+        "new_post_form": NewPostForm(),
+        "name": request.user,
+        "show_info": True,
     })
 
 def show_following(request):
@@ -124,7 +144,10 @@ def show_following(request):
     post_paginator = Paginator(ordered, post_per_page)
     page_now = 1
     return render(request, 'network/all_post.html', {
-        "posts": post_paginator.page(1)
+        "user_info": Profile.objects.get(owner=current_user),
+        "posts": post_paginator.page(1),
+        "new_post_form": NewPostForm(),
+        "name": request.user,
     })
 
 def turn_next(request):
@@ -135,8 +158,7 @@ def turn_next(request):
         page_now = page_now + 1
         print("plus ", page_now)
         next_page = post_paginator.page(page_now)
-        print("okay", JsonResponse([post.serialize() for post in next_page], safe=False))
-        return JsonResponse([post.serialize() for post in next_page], safe=False)
+        return JsonResponse([post.serialize(request.user) for post in next_page], safe=False)
     else:
         return JsonResponse({"error": "Page out of range.",}, status=400)
 
@@ -148,8 +170,8 @@ def turn_prev(request):
         page_now = page_now - 1
         print("minus ", page_now)
         prev_page = post_paginator.page(page_now)
-        print("okay", JsonResponse([post.serialize() for post in prev_page], safe=False))
-        return JsonResponse([post.serialize() for post in prev_page], safe=False)
+        print("okay", [post.serialize(request.user) for post in prev_page])
+        return JsonResponse([post.serialize(request.user) for post in prev_page], safe=False)
     else:
         return JsonResponse({"error": "Page out of range.",}, status=400)
 
@@ -168,11 +190,26 @@ def check_has_another(request):
         "has_next": has_next,
         "has_prev": has_prev,
     }
-    print("page_info", page_info)
-    print("check here")
+    # print("page_info", page_info)
+    # print("check here")
     return JsonResponse(page_info, status=200)
 
-# def show_personal_info(request):
-#     current_user = User.objects.get(username=request.username)
-#     return_data = Profile.objects.get(owner=current_user)
-#     return JsonResponse(return_data.serialize(), safe=False)
+def store_post(request):
+    if request.method == 'POST':
+        form = NewPostForm(request.POST)
+        if form.is_valid():
+            ct = form.cleaned_data["words"]
+            current_user = User.objects.get(username=request.user)
+            new_post = Post(poster=current_user, content=ct, like_num=0)
+            new_post.save()
+    return HttpResponseRedirect(reverse("index"))
+        # data = json.loads(request.body)
+        # if not data.get("content"):
+        #     return JsonResponse({
+        #         "msg": "Content should not be empty."
+        #     }, status=400)
+        # new_post = Post(poster=request.user, content=data.get("content_of_post"), like_num=0)
+        # new_post.save()
+        # return JsonResponse({
+        #     "msg": "ok"
+        # }, status=200)
