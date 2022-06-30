@@ -29,3 +29,6 @@
     position: absolute;
     right: 50px;
 }
+.thin-textarea {
+    height: 50px;
+}

@@ -236,3 +236,13 @@ def like_motion(request):
         cur_post.like_num += 1
     cur_post.save()
     return JsonResponse({"msg": "successful"})
+
+@csrf_exempt
+def change_ct(request):
+    data = json.loads(request.body)
+    new_content = data["content"]
+    cur_post = Post.objects.get(id=data["now_id"])
+    cur_post.content = new_content
+    cur_post.save()
+    print("save")
+    return JsonResponse({"msg": "save successfully"})

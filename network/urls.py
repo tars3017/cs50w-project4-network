@@ -16,5 +16,6 @@ urlpatterns = [
     path("has_another", views.check_has_another, name="another"),
     path("send_post", views.store_post, name="send"),
     path("like_unlike", views.like_motion, name="like"),
+    path("change_post", views.change_ct, name="change_post"),
     # path("prev", views.turn_prev, name="prev"),
 ]

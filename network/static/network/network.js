@@ -14,6 +14,8 @@ function updateCheck() {
     console.log('post change!');
     checkHasNextPrev();
     update_heart();
+    edit();
+    // save_change();
 }
 function update_heart() {
     // console.log('run update_heart');
@@ -35,6 +37,57 @@ function update_heart() {
                 heart.innerHTML = heart.innerHTML.replace(found, Number(found)+1);
             }
         }
+    });
+}
+function edit() {
+    document.querySelectorAll('.edit-place').forEach(button => {
+        button.onclick = () => {
+            console.log(button.parentElement.dataset.id);
+            const old_area = button.parentElement.querySelector('.post-content');
+            const words = old_area.innerHTML;
+            let new_area = document.createElement('textarea');
+            new_area.value = words;
+            new_area.className = "thin-textarea round bg-secondary text-light border-light post-textarea";
+            button.parentElement.replaceChild(new_area, old_area);
+            // console.log(button.parentElement.querySelector('.post-content'));
+
+            save_button = document.createElement('button');
+            save_button.className = "edit-place round text-light bg-secondary border-primary save-button";
+            save_button.innerHTML = "save";
+            button.parentElement.replaceChild(save_button, button);
+            save_change();
+        }
+    });
+}
+function save_change() {
+    console.log("save change");
+    document.querySelectorAll('.save-button').forEach(button => {
+        button.onclick = () => {
+            console.log('click save', button.parentElement.dataset.id);
+            const id = button.parentElement.dataset.id;
+            let new_content = button.parentElement.querySelector('.post-textarea');
+            const str = new_content.value;
+            console.log(str);
+
+            back_to_text = document.createElement('p');
+            back_to_text.innerHTML = str;
+            back_to_text.className = 'post-content';
+            button.parentElement.replaceChild(back_to_text, new_content);
+
+            edit_button = document.createElement('button');
+            edit_button.className = "edit-place round text-light bg-secondary border-primary";
+            edit_button.innerHTML = "edit";
+            button.parentElement.replaceChild(edit_button, button);
+            edit();
+            fetch('/change_post', {
+                method: 'POST',
+                body: JSON.stringify({
+                    content: str,
+                    now_id: id,
+                })
+            });
+        }
+        
     });
 }
 function load_another_page(opt) {
@@ -74,12 +127,13 @@ function load_another_page(opt) {
                 element = document.createElement('button');
                 element.className = "edit-place round text-light bg-secondary border-primary"
                 // element.value = id;
-                element.innerHTML = 'Edit';
+                element.innerHTML = 'edit';
                 this_post.appendChild(element);
             }  
 
             element = document.createElement('p');
             element.innerHTML = content;
+            element.className = 'post-content';
             this_post.appendChild(element);
             
             element = document.createElement('p');
@@ -98,8 +152,9 @@ function load_another_page(opt) {
 
             post_area.appendChild(this_post);
 
-            checkHasNextPrev();
-            update_heart();
+            // checkHasNextPrev();
+            // update_heart();
+            updateCheck();
         });
     })
 

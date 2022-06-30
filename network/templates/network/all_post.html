@@ -28,9 +28,9 @@
                 <div class="post round text-light bg-dark border-primary" data-id={{post.id}}>
                     <h6>{{ post.poster }}</h6>
                     {% if post.poster == name %}
-                        <button class="edit-place round text-light bg-secondary border-primary">Edit</button>
+                        <button class="edit-place round text-light bg-secondary border-primary">edit</button>
                     {% endif %}
-                    <p>{{ post.content }}</p>
+                    <p class="post-content">{{ post.content }}</p>
                     <p>{{ post.post_time }}</p>
                     {% if post in user_info.like_post.all %} 
                         <p class="heart">{{ post.like_num }}&#10084;</p>
