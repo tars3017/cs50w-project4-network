@@ -22,12 +22,17 @@ function update_heart() {
             console.log(heart.parentElement.dataset.id);
             chang_like_status(heart.parentElement.dataset.id);
             console.log(heart.innerHTML);
+            let re = /^[0-9]+/;
+            let found = heart.innerHTML.match(re);
+            console.log("found", Number(found)+1);
             if (heart.innerHTML.includes('❤')) {
                 heart.innerHTML = heart.innerHTML.replace('❤', '♡');
+                heart.innerHTML = heart.innerHTML.replace(found, Number(found)-1);
             }
             else {
-                console.log(heart.innerHTML.replace('♡', '❤'));
+                // console.log(heart.innerHTML.replace('♡', '❤'));
                 heart.innerHTML = heart.innerHTML.replace('♡', '❤');
+                heart.innerHTML = heart.innerHTML.replace(found, Number(found)+1);
             }
         }
     });
@@ -148,4 +153,17 @@ function checkHasNextPrev() {
 
 function chang_like_status(id) {
     console.log("click hear no", id);
+    fetch('/like_unlike', {
+        method: 'POST',
+        body: JSON.stringify({
+            now_id: id
+        })
+    });
+    // .then(tmp => {
+    //     console.log(tmp);
+    // });
+    // .then(response => response.json)
+    // .then(result => {
+    //     console.log(result);
+    // });
 }

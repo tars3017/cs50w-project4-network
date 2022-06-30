@@ -9,6 +9,8 @@ import operator
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django import forms
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 
 post_paginator = None 
@@ -214,6 +216,23 @@ def store_post(request):
         #     "msg": "ok"
         # }, status=200)
 
-
-def like_motion(request, post_num):
-    TODO
+@csrf_exempt
+def like_motion(request):
+    data = json.loads(request.body)
+    cur_post = Post.objects.get(id=data["now_id"])
+    print(cur_post)
+    in_list = False
+    for fan in cur_post.like_list.all():
+        if request.user == fan.owner:
+            in_list = True
+            break
+    if in_list:
+        print("remove from list")
+        Profile.objects.get(owner=request.user).like_post.remove(cur_post)
+        cur_post.like_num -= 1
+    else :
+        print("add to list")
+        Profile.objects.get(owner=request.user).like_post.add(cur_post)
+        cur_post.like_num += 1
+    cur_post.save()
+    return JsonResponse({"msg": "successful"})
